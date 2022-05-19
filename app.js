@@ -8,12 +8,18 @@ const logger = require('koa-logger')
 const MongoConnect = require('./db')
 const cors = require('koa2-cors')
 const koajwt = require('koa-jwt')
+const db = require('./db/index')
 
-//启动数据库
-MongoConnect()
+
 
 const index = require('./routes/index')
 const users = require('./routes/users')
+const designworks = require('./routes/designworks')
+// app.use(async ctx => {
+//   if(ctx.status == 404) {
+//     ctx.response.redirect('/404')
+//   }
+// })
 
 // error handler
 onerror(app)
@@ -39,9 +45,10 @@ app.use(async (ctx, next) => {
   console.log(`${ctx.method} ${ctx.url} - ${ms}ms`)
 })
 
-// routes
+//routes
 app.use(index.routes(), index.allowedMethods())
 app.use(users.routes(), users.allowedMethods())
+app.use(designworks.routes(),designworks.allowedMethods())
 
 
 

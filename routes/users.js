@@ -1,7 +1,9 @@
 const {
     infoStudent,
     updStudent,
-    delStudent
+    delStudent,
+    addStudent,
+    updpassword
 } = require('../controller/users')
 
 const router = require('koa-router')()
@@ -13,7 +15,10 @@ router.get('/infostudent',infoStudent)
 router.post('/updstudent',updStudent)
 //删除学生信息
 router.post('/delstudent',delStudent)
-
+//增加学生信息
+router.post('/addStudent',addStudent)
+//更改学生密码
+router.post('/updpwd',updpassword)
 
 
 module.exports = router
