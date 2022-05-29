@@ -1,7 +1,7 @@
 const db = require('../db/index.js')
 
 const updesignworks = async ctx => {
-    let {
+    const {
         work_title,
         state,
         institute,
@@ -50,7 +50,7 @@ const updesignworks = async ctx => {
 }
 
 const fdesignworks = async ctx => {
-    let sql = `SELECT * FROM designworks`
+    const sql = `SELECT * FROM designworks`
     await db.query(sql).then(rel => {
         if(rel) {
             ctx.body = {
