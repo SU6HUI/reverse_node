@@ -233,7 +233,7 @@ const infoTeacher = async ctx => {
     if (keywords) {
         sql += ` WHERE teacherName like '%${keywords}%'`
         await db.query(sql).then(rel => {
-            if (rel) {
+            if (rel && rel.results.length > 0) {
                 console.log(rel);
                 ctx.body = {
                     code: 200,
@@ -309,7 +309,7 @@ const updTeacher = async ctx => {
             type='1'
             WHERE teacherId='${teacherId}'`
     await db.query(sql).then(rel => {
-        console.log(rel);
+        //console.log(rel);
         if (rel.status == 200 && rel.results.changedRows > 0) {
             ctx.body = {
                 code: 200,
@@ -456,6 +456,240 @@ const updpassword_teacher = async ctx => {
     })
 }
 
+/**
+ * 查询管理员
+ */
+const infoManager = async ctx => {
+    const { keywords } = ctx.request.query
+    let sql = "SELECT * FROM users_manager"
+    if (keywords) {
+        sql += ` WHERE managerName like '%${keywords}%'`
+        await db.query(sql).then(rel => {
+            if (rel&& rel.results.length > 0) {
+                //console.log(rel);
+                ctx.body = {
+                    code: 200,
+                    msg: '数据查看成功',
+                    data: rel.results
+                }
+            } else {
+                ctx.body = {
+                    code: 300,
+                    msg: '数据查看失败',
+                }
+            }
+        }).catch(err => {
+            ctx.body = {
+                code: 500,
+                msg: '数据查看异常',
+                err,
+            }
+        })
+    } else {
+        await db.query(sql).then(rel => {
+            if (rel) {
+                ctx.body = {
+                    code: 200,
+                    msg: '数据查看成功',
+                    data: rel.results
+                }
+            } else {
+                ctx.body = {
+                    code: 300,
+                    msg: '数据查看失败',
+                    err
+                }
+            }
+        }).catch(err => {
+            ctx.body = {
+                code: 500,
+                msg: '数据查看异常',
+                err
+            }
+        })
+    }
+}
+
+/**
+ * 更改管理员信息
+ */
+ const updManager = async ctx => {
+    const {
+        managerId,
+        managerName,
+        IdCard,
+        managerNumber,
+        password,
+        school,
+        educational,
+        sex,
+        phone,
+        political,
+        position
+    } = ctx.request.body
+    let sql = 'UPDATE users_manager SET '
+    sql += `managerName='${managerName}',
+            IdCard='${IdCard}',
+            managerNumber='${managerNumber}',
+            password='${password}',
+            school='${school}',
+            educational='${educational}',
+            sex='${sex}',
+            phone='${phone}',
+            political='${political}',
+            position='${position}'
+            WHERE managerId='${managerId}'`
+    await db.query(sql).then(rel => {
+        if (rel.status == 200 && rel.results.changedRows > 0) {
+            ctx.body = {
+                code: 200,
+                msg: '管理员信息修改成功'
+            }
+        } else {
+            ctx.body = {
+                code: 300,
+                msg: '管理员信息修改失败',
+                err
+            }
+        }
+    }).catch(err => {
+        ctx.body = {
+            code: 500,
+            msg: '信息修改出现异常',
+            err
+        }
+    })
+}
+
+/**
+ * 删除管理员信息
+ */
+ const delManager = async ctx => {
+    const { managerId } = ctx.request.body
+    let sql = `DELETE FROM users_manager WHERE managerId='${managerId}'`
+    await db.query(sql).then(rel => {
+        if (rel) {
+            ctx.body = {
+                code: 200,
+                msg: '数据删除成功',
+                data: rel
+            }
+        } else {
+            ctx.body = {
+                code: 300,
+                msg: '数据删除失败',
+                err
+            }
+        }
+    }).catch(err => {
+        ctx.body = {
+            code: 500,
+            msg: '数据删除异常',
+            err
+        }
+    })
+}
+
+/**
+ * 添加管理员信息
+ */
+ const addManager = async ctx => {
+    const {
+        managerId,
+        managerName,
+        IdCard,
+        managerNumber,
+        password = '666666',
+        type = '2',
+        school = '',
+        educational = '',
+        sex = '男',
+        phone = '',
+        political = '群众',
+        entryTime = '',
+        createTime = Date.now(),
+        position=''
+    } = ctx.request.body
+
+    let sql = 'INSERT INTO users_manager '
+    sql += `(managerId,managerName,IdCard,
+        managerNumber,password,
+        type,school,educational,
+        sex,phone,political,entryTime,
+        createTime,position)
+        values
+        ('${managerId}','${managerName}','${IdCard}',
+        '${managerNumber}','${password}',
+        '${type}','${school}','${educational}',
+        '${sex}','${phone}','${political}','${entryTime}',
+        '${createTime}','${position}')`
+
+    await db.query(sql).then(rel => {
+        if (rel) {
+            ctx.body = {
+                code: 200,
+                msg: "添加成功",
+            }
+        } else {
+            ctx.body = {
+                code: 300,
+                msg: "添加失败",
+                err
+            }
+        }
+    }).catch(err => {
+        ctx.body = {
+            code: 500,
+            msg: "添加时出现异常",
+            err
+        }
+    })
+}
+
+/**
+ * 更改密码
+ */
+ const updpassword_manager = async ctx => {
+    const {
+        IdCard,
+        password,
+        managerName
+    } = ctx.request.body
+
+    //console.log(studentName);
+
+    let sql = `UPDATE users_manager SET password='${password}' WHERE (IdCard='${IdCard}' AND managerName='${managerName}')`
+
+    await db.query(sql).then(rel => {
+        if (rel.status == 200 && rel.results.changedRows > 0) {
+            ctx.body = {
+                code: 200,
+                msg: '修改成功',
+                data: {
+                    ok: 1
+                }
+            }
+        } else {
+            ctx.body = {
+                code: 300,
+                msg: "修改失败",
+                data: {
+                    ok: 0,
+                    err
+                }
+            }
+        }
+    }).catch(err => {
+        ctx.body = {
+            code: 500,
+            msg: "修改时出现异常",
+            data: {
+                ok: 0,
+                err
+            }
+        }
+    })
+}
 
 
 module.exports = {
@@ -469,5 +703,10 @@ module.exports = {
     delTeacher,
     addTeacher,
     updpassword_teacher,
+    infoManager,
+    updManager,
+    delManager,
+    addManager,
+    updpassword_manager
 
 }

@@ -8,7 +8,12 @@ const {
     updTeacher,
     delTeacher,
     addTeacher,
-    updpassword_teacher
+    updpassword_teacher,
+    infoManager,
+    updManager,
+    delManager,
+    addManager,
+    updpassword_manager
     
 } = require('../controller/users')
 
@@ -36,6 +41,17 @@ router.post('/delteacher',delTeacher)
 router.post('/addteacher',addTeacher)
 //修改教师密码
 router.post('/updpwd_teacher',updpassword_teacher)
+
+//显示管理员信息
+router.get('/infomanager',infoManager)
+//更改教师信息
+router.post('/updmanager',updManager)
+//删除教师信息
+router.post('/delmanager',delManager)
+//添加教师细腻
+router.post('/addmanager',addManager)
+//修改教师密码
+router.post('/updpwd_manager',updpassword_manager)
 
 
 module.exports = router

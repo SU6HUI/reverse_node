@@ -29,6 +29,7 @@ exports.query = function(sql,values) {
                 });
             } else {
                 //链接数据库成功
+                console.log('启动服务器完毕');
                 connection.query(sql,values,(err,results) => {
                     if(err) {
                         reject(err);
