@@ -12,11 +12,11 @@
 const mysql = require('mysql')
 
 var pool = mysql.createPool({
-    host:'localhost', //链接的服务器（代码托管到线上后，需要改为内网IP）
+    host:'8.130.18.13', //链接的服务器（代码托管到线上后，需要改为内网IP）
     port:3306, //mysql运行端口
     database:'reverse', //库
     user:'root',
-    password:'sunhui666'
+    password:'SUNhui66^'
 })
 
 exports.query = function(sql,values) {
@@ -29,7 +29,6 @@ exports.query = function(sql,values) {
                 });
             } else {
                 //链接数据库成功
-                console.log('启动服务器完毕');
                 connection.query(sql,values,(err,results) => {
                     if(err) {
                         reject(err);

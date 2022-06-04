@@ -45,7 +45,8 @@ const infoStudent = async ctx => {
         }).catch(err => {
             ctx.body = {
                 code: 500,
-                msg: '数据查看异常'
+                msg: '数据查看异常',
+                err
             }
         })
     }
