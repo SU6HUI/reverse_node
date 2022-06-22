@@ -13,12 +13,16 @@ const {
     updManager,
     delManager,
     addManager,
-    updpassword_manager
+    updpassword_manager,
+    signUser
     
 } = require('../controller/users')
 
 const router = require('koa-router')()
 router.prefix('/api/users')
+
+//登陆验证
+router.post('/loginuser',signUser)
 
 //显示学生信息
 router.get('/infostudent',infoStudent)

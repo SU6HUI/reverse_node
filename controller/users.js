@@ -1,5 +1,9 @@
 // let Users = require('../models/users')
 const db = require('../db/index.js')
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+const config = require('../config')
+
 //查询学生
 const infoStudent = async ctx => {
     const { keywords } = ctx.request.query
@@ -157,7 +161,7 @@ const addStudent = async ctx => {
         ('${studentId}', '${studentName}','${studentNumber}',
         '${IdCard}','${sex}','${state}','${phone}',
         '${political}','${institute}','${major}'
-        ,'${password}','0','${studentClass}','${createDate}')`
+        ,'${bcrypt.hashSync(password,5)}','0','${studentClass}','${createDate}')`
     // sql += `(studentId) 
     //         values
     //         ('${studentId}')`
@@ -194,7 +198,7 @@ const updpassword = async ctx => {
 
     //console.log(studentName);
 
-    let sql = `UPDATE users SET password='${password}' WHERE (IdCard='${IdCard}' AND studentName='${studentName}')`
+    let sql = `UPDATE users SET password='${bcrypt.hashSync(password,5)}' WHERE (IdCard='${IdCard}' AND studentName='${studentName}')`
 
     await db.query(sql).then(rel => {
         if (rel.status == 200 && rel.results.changedRows > 0) {
@@ -692,6 +696,51 @@ const infoManager = async ctx => {
     })
 }
 
+//登录验证
+const signUser = async ctx => {
+    const userinfo = ctx.request.body
+    //学生
+    if(userinfo.type == 0) {
+        const {studentNumber,password} = userinfo
+        if(!studentNumber || !password) {
+            ctx.body = {
+                code: 300,
+                msg: "用户名或密码不合法"
+            }
+        }
+        const sql = `SELECT * from users WHERE studentNumber=${studentNumber}`
+
+        await db.query(sql).then(rel => {
+            
+            const compareResult = bcrypt.compareSync(password,(rel.results[0].password))
+            
+
+            if (rel.results.length !== 1 || !compareResult) {
+                ctx.body = {
+                    code: 300,
+                    msg: '登录失败',
+                }
+            } 
+            
+            const user = {...rel.results[0],password:''}
+            
+            const tokenStr = jwt.sign(user,config.jwtSecretKey,{expiresIn:config.expiresIn})
+            if(rel.results.length == 1){
+                ctx.body = {
+                    code: 200,
+                    msg: '登录成功',
+                    token:'Bearer '+tokenStr
+                }
+            }
+        }).catch(err => {
+            ctx.body = {
+                code: 500,
+                msg: '登录异常',
+                err
+            }
+        })
+    }
+}
 
 module.exports = {
     infoStudent,
@@ -708,6 +757,7 @@ module.exports = {
     updManager,
     delManager,
     addManager,
-    updpassword_manager
+    updpassword_manager,
+    signUser
 
 }
